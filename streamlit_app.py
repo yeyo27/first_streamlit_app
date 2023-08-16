@@ -18,4 +18,6 @@ streamlit.header('🍌🥭 Build Your Own Fruit Smoothie 🥝🍇')
 selected_fruits = streamlit.multiselect('Pick some fruits:', list(fruits_df.index), ['Avocado', 'Strawberries'])
 fruits_to_show = fruits_df.loc[selected_fruits]
 streamlit.dataframe(fruits_to_show)
-streamlit.text(fruityvice_response)
+
+streamlit.header('Fruityvice Fruit Advice!')
+streamlit.text(fruityvice_response.json())
