@@ -21,9 +21,11 @@ selected_fruits = streamlit.multiselect('Pick some fruits:', list(fruits_df.inde
 fruits_to_show = fruits_df.loc[selected_fruits]
 streamlit.dataframe(fruits_to_show)
 
+
 def get_fruity_vice_data(fruit_choice):
   fruityvice_response = requests.get("https://www.fruityvice.com/api/fruit/" + fruit_choice.casefold())
   return pd.json_normalize(fruityvice_response.json())
+
 
 streamlit.header('Fruityvice Fruit Advice!')
 try:
@@ -36,14 +38,21 @@ try:
 except URLError as e:
   streamlit.error()
 
-streamlit.stop()
-my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
-my_cur = my_cnx.cursor()
-my_cur.execute("SELECT * FROM FRUIT_LOAD_LIST")
-my_data_rows = my_cur.fetchall()
-streamlit.header("The fruit data load contains:")
-streamlit.dataframe(my_data_rows)
 
+streamlit.header("The fruit data load contains:")
+
+
+def get_fruit_load_list():
+  with my_cnx.cursor() as my_cur:
+    my_cur.execute("SELECT * FROM FRUIT_LOAD_LIST")
+    return my_cur.fetchall()
+
+if streamlit.button("Get Fruit Load List"):
+  my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
+  my_data_rows = get_fruit_load_list()
+  streamlit.dataframe(my_data_rows)
+
+streamlit.stop()
 fruit_to_add = streamlit.text_input('What fruit would you like to add?', 'jackfruit')
 my_cur.execute("insert into fruit_load_list values ('" + fruit_to_add + "')")
 streamlit.write("Thanks for adding", fruit_to_add)
