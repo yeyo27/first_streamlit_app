@@ -4,7 +4,7 @@ import requests
 
 fruits_df = pd.read_csv('https://uni-lab-files.s3.us-west-2.amazonaws.com/dabw/fruit_macros.txt')
 fruits_df.set_index('Fruit', inplace=True)
-fruityvice_response = requests.get("https://www.fruityvice.com/api/fruit/watermelon")
+
 
 streamlit.title("My Mom's New Healthy Diner")
 
@@ -20,5 +20,8 @@ fruits_to_show = fruits_df.loc[selected_fruits]
 streamlit.dataframe(fruits_to_show)
 
 streamlit.header('Fruityvice Fruit Advice!')
+fruit_choice = streamlit.text_input('What fruit would you like information about', 'Kiwi')
+streamlit.write('The user entered', fruit_choice)
+fruityvice_response = requests.get("https://www.fruityvice.com/api/fruit/" + casefold(fruit_choice))
 fruityvice_normalized = pd.json_normalize(fruityvice_response.json())
 streamlit.dataframe(fruityvice_normalized)
